@@ -136,22 +136,12 @@ namespace CSharpToSql
         public static User[] GetAllUsers()
         {
             //connection string (server,database, authentication)
-            //var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;"; //at sign used for backslash
-            // "uid=sa;pwd=sa;" - could be used instead of trusted connection, but has to be setup in sql
-
-            //connection object
-            //var Connection = new SqlConnection(connStr);
-
-            //replaced last to statements
-            //var Connection = new SqlConnection(CONN_STRING);
-
             //refactored even more
             var Connection = CreateAndCheckConnection();
             if (Connection == null)
             {
                 return null;
             }
-
 
             //open connection
             Connection.Open();
@@ -165,18 +155,8 @@ namespace CSharpToSql
 
             //sqlcommand
             var sql = "SELECT * from Users;";
-
-            //var cmd = new SqlCommand(sql, Connection);
-
+            
             //sqldatareader object
-            //var reader = cmd.ExecuteReader(); //this returns a sqldatareader (for a select), and causes statement to excute
-            //if (!reader.HasRows)
-            //{
-            //    Console.WriteLine("Result set has no row.");
-            //    Connection.Close();
-            //    return null;
-            //}
-
             //more refactoring
             var reader = CheckSqlReaderAndCheck(sql, Connection);
 
@@ -204,15 +184,7 @@ namespace CSharpToSql
 
             }
 
-            //for (int i = 0; i < index; i++)
-            //{
-            //    var user = users[i];
-            //    Console.WriteLine($"Id = {user.Id}, Firstname = {user.Firstname}, Lastname = {user.Lastname}"
-            //        + $", Phone = {user.Phone}, Email = {user.Email}, IsReviewer = {user.IsReviewer}, IsAdmin = {user.IsAdmin}");
-            //}
-
             //Console.ReadKey();
-
 
             //statement to close
             Connection.Close();
