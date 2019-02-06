@@ -19,6 +19,55 @@ namespace CSharpToSql
         public bool IsReviewer { get; set; }
         public bool IsAdmin { get; set; }
 
+        public static bool UpdateUser(User user)
+        {
+            var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
+            var Connection = new SqlConnection(connStr);
+            Connection.Open();
+
+            if (Connection.State != System.Data.ConnectionState.Open)
+            {
+                Console.WriteLine("Connection did not open");
+                return false;
+            }
+
+            var isReviewer = user.IsReviewer ? 1 : 0;
+            var isAdmin = user.IsAdmin ? 1 : 0;
+            var sql = $"UPDATE Users set ";
+            sql += "Username = '" + user.Username + "',"; //added single to surround input username
+            sql += "Password = '" + user.Password + "',";
+            sql += "Firstname = '" + user.Firstname + "',";
+            sql += "Lastname = '" + user.Lastname + "',";
+            sql += "Phone = '" + user.Phone + "',";
+            sql += "Email = '" + user.Email + "',";
+            sql += "IsReviewer = " + (user.IsReviewer ? 1 : 0) + ","; //using ternary operator
+            sql += "IsAdmin = " + (user.IsAdmin ? 1 : 0);
+            sql += $" WHERE Id = {user.Id}";
+            var cmd = new SqlCommand(sql, Connection);
+            var recsAffected = cmd.ExecuteNonQuery();
+            Connection.Close();
+            return recsAffected == 1;
+        }
+
+        public static bool DeleteUser(int Id)
+        {
+            var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
+            var Connection = new SqlConnection(connStr);
+            Connection.Open();
+
+            if (Connection.State != System.Data.ConnectionState.Open)
+            {
+                Console.WriteLine("Connection did not open");
+                return false;
+            }
+
+            var sql = $"DELETE from Users Where Id = {Id}";
+            var cmd = new SqlCommand(sql, Connection);
+            var recsAffected = cmd.ExecuteNonQuery();
+            Connection.Close();
+            return recsAffected == 1;
+        }
+
         public static bool InsertUser(User user)
         {
             var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
@@ -168,9 +217,9 @@ namespace CSharpToSql
             IsAdmin = isAdmin;
         }
 
-        public string ToPrint()
+        public override string ToString()
         {
-            return $"[ToPrint()] Id={Id}, Username={Username}, Name={Firstname} {Lastname}";
+            return $"[ToString()] Id={Id}, Username={Username}, Name={Firstname} {Lastname}";
         }
     }
 }
