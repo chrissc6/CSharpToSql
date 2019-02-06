@@ -9,6 +9,8 @@ namespace CSharpToSql
 {
     class User
     {
+        private static string CONN_STRING = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
+
         public int Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
@@ -19,15 +21,24 @@ namespace CSharpToSql
         public bool IsReviewer { get; set; }
         public bool IsAdmin { get; set; }
 
-        public static bool UpdateUser(User user)
+        private static SqlConnection CreateAndCheckConnection()
         {
-            var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
-            var Connection = new SqlConnection(connStr);
+            var Connection = new SqlConnection(CONN_STRING);
             Connection.Open();
 
             if (Connection.State != System.Data.ConnectionState.Open)
             {
                 Console.WriteLine("Connection did not open");
+                return null;
+            }
+            return Connection;
+        }
+
+        public static bool UpdateUser(User user)
+        {
+            var Connection = CreateAndCheckConnection();
+            if(Connection == null)
+            {
                 return false;
             }
 
@@ -51,13 +62,9 @@ namespace CSharpToSql
 
         public static bool DeleteUser(int Id)
         {
-            var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
-            var Connection = new SqlConnection(connStr);
-            Connection.Open();
-
-            if (Connection.State != System.Data.ConnectionState.Open)
+            var Connection = CreateAndCheckConnection();
+            if (Connection == null)
             {
-                Console.WriteLine("Connection did not open");
                 return false;
             }
 
@@ -70,13 +77,9 @@ namespace CSharpToSql
 
         public static bool InsertUser(User user)
         {
-            var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
-            var Connection = new SqlConnection(connStr);
-            Connection.Open();
-
-            if (Connection.State != System.Data.ConnectionState.Open)
+            var Connection = CreateAndCheckConnection();
+            if (Connection == null)
             {
-                Console.WriteLine("Connection did not open");
                 return false;
             }
 
@@ -90,19 +93,8 @@ namespace CSharpToSql
             return recsAffected == 1;
         }
 
-        public static User GetUserByPrimaryKey(int Id)
+        private static SqlDataReader CheckSqlReaderAndCheck(string sql, SqlConnection Connection)
         {
-            var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
-            var Connection = new SqlConnection(connStr);
-            Connection.Open();
-
-            if (Connection.State != System.Data.ConnectionState.Open)
-            {
-                Console.WriteLine("Connection did not open");
-                return null;
-            }
-
-            var sql = $"SELECT * from Users WHERE Id = {Id};";
             var cmd = new SqlCommand(sql, Connection);
             var reader = cmd.ExecuteReader();
             if (!reader.HasRows)
@@ -111,7 +103,20 @@ namespace CSharpToSql
                 Connection.Close();
                 return null;
             }
+            return reader;
+        }
 
+        public static User GetUserByPrimaryKey(int Id)
+        {
+            var Connection = CreateAndCheckConnection();
+            if (Connection == null)
+            {
+                return null;
+            }
+
+            var sql = $"SELECT * from Users WHERE Id = {Id};";
+            
+            var reader = CheckSqlReaderAndCheck(sql, Connection);
             reader.Read();
 
             var user = new User();
@@ -131,11 +136,22 @@ namespace CSharpToSql
         public static User[] GetAllUsers()
         {
             //connection string (server,database, authentication)
-            var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;"; //at sign used for backslash
+            //var connStr = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;"; //at sign used for backslash
             // "uid=sa;pwd=sa;" - could be used instead of trusted connection, but has to be setup in sql
 
             //connection object
-            var Connection = new SqlConnection(connStr);
+            //var Connection = new SqlConnection(connStr);
+
+            //replaced last to statements
+            //var Connection = new SqlConnection(CONN_STRING);
+
+            //refactored even more
+            var Connection = CreateAndCheckConnection();
+            if (Connection == null)
+            {
+                return null;
+            }
+
 
             //open connection
             Connection.Open();
@@ -149,16 +165,20 @@ namespace CSharpToSql
 
             //sqlcommand
             var sql = "SELECT * from Users;";
-            var cmd = new SqlCommand(sql, Connection);
+
+            //var cmd = new SqlCommand(sql, Connection);
 
             //sqldatareader object
-            var reader = cmd.ExecuteReader(); //this returns a sqldatareader (for a select), and causes statement to excute
-            if (!reader.HasRows)
-            {
-                Console.WriteLine("Result set has no row.");
-                Connection.Close();
-                return null;
-            }
+            //var reader = cmd.ExecuteReader(); //this returns a sqldatareader (for a select), and causes statement to excute
+            //if (!reader.HasRows)
+            //{
+            //    Console.WriteLine("Result set has no row.");
+            //    Connection.Close();
+            //    return null;
+            //}
+
+            //more refactoring
+            var reader = CheckSqlReaderAndCheck(sql, Connection);
 
             var users = new User[100];
             var index = 0;
