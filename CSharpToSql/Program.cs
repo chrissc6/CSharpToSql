@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient; // need this namespace
 
+
 namespace CSharpToSql
 {
     class Program
