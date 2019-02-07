@@ -45,17 +45,17 @@ namespace CSharpToSql
 
             var isReviewer = user.IsReviewer ? 1 : 0;
             var isAdmin = user.IsAdmin ? 1 : 0;
-            var sql = $"UPDATE Users set ";
-            sql += "Username = '" + user.Username + "',"; //added single to surround input username
-            sql += "Password = '" + user.Password + "',";
-            sql += "Firstname = '" + user.Firstname + "',";
-            sql += "Lastname = '" + user.Lastname + "',";
-            sql += "Phone = '" + user.Phone + "',";
-            sql += "Email = '" + user.Email + "',";
-            sql += "IsReviewer = " + (user.IsReviewer ? 1 : 0) + ","; //using ternary operator
-            sql += "IsAdmin = " + (user.IsAdmin ? 1 : 0);
-            sql += $" WHERE Id = {user.Id}";
-            var cmd = new SqlCommand(sql, Connection);
+            var sql = new StringBuilder("UPDATE Users set "); //now using stringbuilder
+            sql.Append($"Username = '{user.Username}',"); //added single to surround input username
+            sql.Append($"Password = '{user.Password}',");
+            sql.Append($"Firstname = '{user.Firstname}',");
+            sql.Append($"Lastname = '{user.Lastname}',");
+            sql.Append($"Phone = '{user.Phone}',");
+            sql.Append($"Email = '{user.Email}',");
+            sql.AppendFormat("IsReviewer = {0}", (user.IsReviewer ? 1 : 0)); //using ternary operator
+            sql.AppendFormat("IsAdmin = {0}", (user.IsAdmin ? 1 : 0));
+            sql.Append($" WHERE Id = {user.Id}");
+            var cmd = new SqlCommand(sql.ToString(), Connection); //added tostring 
             var recsAffected = cmd.ExecuteNonQuery();
             Connection.Close();
             return recsAffected == 1;
