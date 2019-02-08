@@ -52,11 +52,12 @@ namespace CSharpToSql
             sql.Append($"Lastname = '{user.Lastname}',");
             sql.Append($"Phone = '{user.Phone}',");
             sql.Append($"Email = '{user.Email}',");
-            sql.AppendFormat("IsReviewer = {0}", (user.IsReviewer ? 1 : 0)); //using ternary operator
+            sql.AppendFormat("IsReviewer = {0} ,", (user.IsReviewer ? 1 : 0)); //using ternary operator
             sql.AppendFormat("IsAdmin = {0}", (user.IsAdmin ? 1 : 0));
             sql.Append($" WHERE Id = {user.Id}");
             var cmd = new SqlCommand(sql.ToString(), Connection); //added tostring 
             var recsAffected = cmd.ExecuteNonQuery();
+            Console.WriteLine(recsAffected);
             Connection.Close();
             return recsAffected == 1;
         }
@@ -123,6 +124,7 @@ namespace CSharpToSql
             var user = new User();
             user.Id = (int)reader["Id"];
             user.Username = (string)reader["Username"];
+            user.Password = (string)reader["Password"];
             user.Firstname = (string)reader["Firstname"];
             user.Lastname = (string)reader["Lastname"];
             user.Phone = reader["Phone"] == DBNull.Value ? null : (string)reader["Phone"];
@@ -145,7 +147,7 @@ namespace CSharpToSql
             }
 
             //open connection
-            Connection.Open();
+            //Connection.Open();
 
             //check if opened worked
             if (Connection.State != System.Data.ConnectionState.Open)
@@ -161,7 +163,7 @@ namespace CSharpToSql
             //more refactoring
             var reader = CheckSqlReaderAndCheck(sql, Connection);
 
-            var users = new User[100];
+            var users = new List<User>(); //switch to a list so its not fixed length 
             var index = 0;
 
             while (reader.Read()) //moves pointer to the next vaild row
@@ -178,7 +180,7 @@ namespace CSharpToSql
                 user.IsReviewer = (bool)reader["IsReviewer"];
                 user.IsAdmin = (bool)reader["IsAdmin"];
 
-                users[index++] = user;
+                users.Add(user); //adds to our collection
                 //index++;
 
                 //Console.WriteLine($"Id = {user.Id}, Firstname = {user.Firstname}, Lastname = {user.Lastname}, Password = {Password}, Phone = {user.Phone}, Email = {user.Email}, IsReviewer = {user.IsReviewer}, IsAdmin = {user.IsAdmin}");
@@ -189,7 +191,7 @@ namespace CSharpToSql
 
             //statement to close
             Connection.Close();
-            return users;
+            return users.ToArray(); //returns an array of users, but it is entered as a list no worry about how big the array needs to be
         }
 
         //const
@@ -213,6 +215,7 @@ namespace CSharpToSql
         public override string ToString()
         {
             return $"[ToString()] Id={Id}, Username={Username}, Name={Firstname} {Lastname}";
+            //return $"Id={Id}, Username={Username}, Name={Firstname} {Lastname}";
         }
     }
 }
