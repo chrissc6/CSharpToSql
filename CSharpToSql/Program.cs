@@ -13,51 +13,58 @@ namespace CSharpToSql
         // STUDENT05\SQLEXPRESS
         static void Main(string[] args)
         {
-            //insert user
-
-            var user = new User(0, "xxxgdidsjh6", "sd", "userhx", "usesrx", "5135551234", "info@user.com", true, true);
-            var returnCode = User.InsertUser(user);
-            Console.ReadKey();
-
-            User[] users = User.GetAllUsers();
-            foreach (var item in users)
+            try
             {
-                if (item == null)
+
+                //insert user
+
+                var user = new User(0, "xxxgdidsjh6", "sd", "userhx", "usesrx", "5135551234", "info@user.com", true, true);
+                var returnCode = User.InsertUser(user);
+
+                User[] users = User.GetAllUsers();
+                foreach (var item in users)
                 {
-                    continue; //skip the rest of the body
+                    if (item == null)
+                    {
+                        continue; //skip the rest of the body
+                    }
+                    Console.WriteLine(item);
                 }
-                Console.WriteLine(item);
+
+                const int Id = 13;
+
+                //update user
+
+                User userpk = User.GetUserByPrimaryKey(Id);
+                Console.WriteLine(userpk);
+
+                userpk.Password = "newpass2";
+                var updateSuccess = User.UpdateUser(userpk);
+                if (updateSuccess)
+                    Console.WriteLine("Update successful");
+                else
+                {
+                    Console.WriteLine("Update failed");
+                }
+                Console.ReadKey();
+
+
+                //delete user
+
+                var deleteSuccess = User.DeleteUser(Id);
+                ////if(deleteSuccess == false)
+                if (!deleteSuccess) //better way
+                {
+                    Console.WriteLine("Delete failed on non-existent ID");
+                }
+                else
+                {
+                    Console.WriteLine("Delete success");
+                }
             }
-
-            const int Id = 13;
-
-            //update user
-
-            User userpk = User.GetUserByPrimaryKey(Id);
-            Console.WriteLine(userpk);
-
-            userpk.Password = "newpass2";
-            var updateSuccess = User.UpdateUser(userpk);
-            if (updateSuccess)
-                Console.WriteLine("Update successful");
-            else
+            catch(Exception ex)
             {
-                Console.WriteLine("Update failed");
-            }
-            Console.ReadKey();
-
-
-            //delete user
-
-            var deleteSuccess = User.DeleteUser(Id);
-            ////if(deleteSuccess == false)
-            if (!deleteSuccess) //better way
-            {
-                Console.WriteLine("Delete failed on non-existent ID");
-            }
-            else
-            {
-                Console.WriteLine("Delete success");
+                Console.WriteLine($"EXCEPTION: {ex.Message} Error 099MM01");
             }
             Console.ReadKey();
         }

@@ -26,6 +26,30 @@ namespace CSharpToSql
         {
             var Connection = new SqlConnection(CONN_STRING);
             Connection.Open();
+            //try           //try-catch block but moved to main method
+            //{
+            //    Connection.Open();
+            //}
+            //catch(InvalidOperationException ex)
+            //{
+            //    Console.WriteLine(ex.Message + " Error with connection 01");
+            //    return null;
+            //}
+            //catch(SqlException ex)
+            //{
+            //    Console.WriteLine(ex.Message + " Error with connection 02");
+            //    return null;
+            //}
+            //catch(System.Configuration.ConfigurationException ex)
+            //{
+            //    Console.WriteLine(ex.Message + " Error with connection 03");
+            //    return null;
+            //}
+            //catch(Exception ex)
+            //{
+            //    Console.WriteLine(ex.Message + " Error with connection 00");
+            //    return null;
+            //}
 
             if (Connection.State != System.Data.ConnectionState.Open)
             {
