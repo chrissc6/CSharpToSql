@@ -80,10 +80,17 @@ namespace CSharpToSql
             sql.AppendFormat("IsAdmin = {0}", (user.IsAdmin ? 1 : 0));
             sql.Append($" WHERE Id = {user.Id}");
             var cmd = new SqlCommand(sql.ToString(), Connection); //added tostring 
-            var recsAffected = cmd.ExecuteNonQuery();
-            Console.WriteLine(recsAffected);
-            Connection.Close();
-            return recsAffected == 1;
+            try
+            {
+                var recsAffected = cmd.ExecuteNonQuery();
+                Connection.Close();
+                return recsAffected == 1;
+            }
+            catch (Exception)
+            {
+                Connection.Close();
+                return false;
+            }
         }
 
         public static bool DeleteUser(int Id)
@@ -153,6 +160,10 @@ namespace CSharpToSql
             var sql = $"SELECT * from Users WHERE Id = {Id};";
             
             var reader = CheckSqlReaderAndCheck(sql, Connection);
+            if(reader == null)
+            {
+                return null;
+            }
             reader.Read();
 
             var user = new User();
