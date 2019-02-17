@@ -10,7 +10,7 @@ namespace CSharpToSql
     public class User
     {   
         // "uid=sa;pwd=sa;" - could be used instead of trusted connection, but has to be setup in sql
-        private static string CONN_STRING = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
+        private static string CONN_STRING = @"server=DESKTOP-F66K0HM\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
 
         public int Id { get; set; }
         public string Username { get; set; }
@@ -80,10 +80,17 @@ namespace CSharpToSql
             sql.AppendFormat("IsAdmin = {0}", (user.IsAdmin ? 1 : 0));
             sql.Append($" WHERE Id = {user.Id}");
             var cmd = new SqlCommand(sql.ToString(), Connection); //added tostring 
-            var recsAffected = cmd.ExecuteNonQuery();
-            Console.WriteLine(recsAffected);
-            Connection.Close();
-            return recsAffected == 1;
+            try
+            {
+                var recsAffected = cmd.ExecuteNonQuery();
+                Connection.Close();
+                return recsAffected == 1;
+            }
+            catch (Exception)
+            {
+                Connection.Close();
+                return false;
+            }
         }
 
         public static bool DeleteUser(int Id)
@@ -114,9 +121,19 @@ namespace CSharpToSql
             var sql = $"INSERT into users (Username, Password, Firstname, Lastname, Phone, Email, IsReviewer, IsAdmin)"
                 + $"values ('{user.Username}', '{user.Password}', '{user.Firstname}', '{user.Lastname}', '{user.Phone}', '{user.Email}', {isReviewer}, {isAdmin})";
             var cmd = new SqlCommand(sql, Connection);
-            var recsAffected = cmd.ExecuteNonQuery();
-            Connection.Close();
-            return recsAffected == 1;
+            try
+            {
+                var recsAffected = cmd.ExecuteNonQuery();
+                Connection.Close();
+                return recsAffected == 1;
+            }
+            catch(Exception)
+            {
+                Connection.Close();
+                return false;
+            }
+            
+            
         }
 
         private static SqlDataReader CheckSqlReaderAndCheck(string sql, SqlConnection Connection)
@@ -143,6 +160,10 @@ namespace CSharpToSql
             var sql = $"SELECT * from Users WHERE Id = {Id};";
             
             var reader = CheckSqlReaderAndCheck(sql, Connection);
+            if(reader == null)
+            {
+                return null;
+            }
             reader.Read();
 
             var user = new User();
