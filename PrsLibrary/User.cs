@@ -26,30 +26,6 @@ namespace CSharpToSql
         {
             var Connection = new SqlConnection(CONN_STRING);
             Connection.Open();
-            //try           //try-catch block but moved to main method
-            //{
-            //    Connection.Open();
-            //}
-            //catch(InvalidOperationException ex)
-            //{
-            //    Console.WriteLine(ex.Message + " Error with connection 01");
-            //    return null;
-            //}
-            //catch(SqlException ex)
-            //{
-            //    Console.WriteLine(ex.Message + " Error with connection 02");
-            //    return null;
-            //}
-            //catch(System.Configuration.ConfigurationException ex)
-            //{
-            //    Console.WriteLine(ex.Message + " Error with connection 03");
-            //    return null;
-            //}
-            //catch(Exception ex)
-            //{
-            //    Console.WriteLine(ex.Message + " Error with connection 00");
-            //    return null;
-            //}
 
             if (Connection.State != System.Data.ConnectionState.Open)
             {
@@ -171,10 +147,8 @@ namespace CSharpToSql
             {
                 return null;
             }
-
             //open connection
             //Connection.Open();
-
             //check if opened worked
             if (Connection.State != System.Data.ConnectionState.Open)
             {
@@ -200,7 +174,7 @@ namespace CSharpToSql
                 user.Firstname = (string)reader["Firstname"];
                 user.Lastname = (string)reader["Lastname"];
                 //var fullname = $"{user.Firstname} {user.Lastname}";
-                //var Password = (string)reader["Password"];
+                user.Password = (string)reader["Password"];
                 user.Phone = reader["Phone"] == DBNull.Value ? null : (string)reader["Phone"];
                 user.Email = reader["Email"] == DBNull.Value ? null : (string)reader["Email"];
                 user.IsReviewer = (bool)reader["IsReviewer"];
