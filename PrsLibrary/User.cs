@@ -9,7 +9,7 @@ namespace CSharpToSql
 {
     public class User
     {   
-        // "uid=sa;pwd=sa;" - could be used instead of trusted connection, but has to be setup in sql 
+        // "uid=sa;pwd=sa;" - could be used instead of trusted connection, but has to be setup in sql  
         private static string CONN_STRING = @"server=STUDENT05\SQLEXPRESS; database=PrsDb; trusted_connection=true;";
 
         public int Id { get; set; }
