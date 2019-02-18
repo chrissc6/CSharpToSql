@@ -84,6 +84,7 @@ namespace CSharpToSql
             Console.WriteLine(recsAffected);
             Connection.Close();
             return recsAffected == 1;
+            //this is where tc was
         }
 
         public static bool DeleteUser(int Id)
@@ -117,6 +118,7 @@ namespace CSharpToSql
             var recsAffected = cmd.ExecuteNonQuery();
             Connection.Close();
             return recsAffected == 1;
+            //another tc was here
         }
 
         private static SqlDataReader CheckSqlReaderAndCheck(string sql, SqlConnection Connection)
